@@ -1,0 +1,15 @@
+Data were obtained from https://overwatchleague.com/en-us/statslab (accessed: 2022-03-17)
+
+.csv files contain overwatch league (OWL) player hero stats from 3 different stages of the 2019 OWL season
+
+Columns:
+start_time	:	indicates match starting time
+match_id	:	unique match id
+stage		:	OWL stage number
+map_type	:	match gamemode
+map_name	:	name of map on which the match was played
+player		:	username of OWL player
+team		:	team of OWL player
+stat_name	:	player performance variable recorded during match
+hero		:	character being played ('All Heroes' is a total of all characters played during the match)
+stat_amount	:	value of the variable indicated in the stat_name column
