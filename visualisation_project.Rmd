@@ -5,7 +5,7 @@ output:
     fig_width: 10
     df_print: paged
 ---
-```{r echo = FALSE, results = FALSE}
+```{r echo = FALSE, results = FALSE,  warning = FALSE, message = FALSE, error = FALSE}
 install.packages("renv")
 library(renv)
 renv::restore()
@@ -14,6 +14,8 @@ renv::restore()
 library(here)
 logo <- here("figs","OWL.png")
 knitr::include_graphics(logo)
+
+knitr::opts_chunk$set(echo = TRUE, results = 'hide', warning = FALSE, error = FALSE, message = FALSE, rows.print = 5, fig.align = "center")
 ```
   
 ## Background
@@ -27,33 +29,35 @@ Characters are categorized into 3 groups depending upon their designed role in a
 
 ## Data Origins and Research Questions
 
-The dataset was obtained from [Overwatch League Statslab](https://www.overwatchleague.com/en-us/statstab) and contains in-game stat data collected during the **Overwatch league (OWL)** 2019 professional esports tournament; including a record of how long each hero was played for by each player in each tournament match, which indicates the popularity of the character in the **'meta'** - the generally agreed upon most effective winning strategy.
+The dataset was obtained from [Overwatch League Statslab](https://www.overwatchleague.com/en-us/statstab) and contains in-game stat data collected during the **Overwatch league (OWL)** 2019 professional esports tournament; including a record of how long each hero was played for by each player in each tournament match, which indicates the popularity of the character in the **'meta'** - the generally agreed upon best strategy.
 
 The game's esports scene reached peak popularity around 2018-19, during which time a specific composition of heroes, termed **GOATS** (after the North American team which discovered it), was found to be most optimal and became the popular choice for professional teams.
-This composition composed of 3 tanks, and 3 healers, neglecting mobile dps characters in favor of raw survivability. This was controversial as most of these heroes required less skill at aiming - a central part of most fps games.
+This composition composed of 3 tanks, and 3 healers, neglecting mobile dps characters in favor of raw survivability. This was controversial as most of these heroes required less skill at aiming - a central part of most fps games. 
 
 The dominance of this composition triggered a wave of attempts by the developers of the game to decrease the power of the heroes within GOATS during 2019, culminating with the introduction of a 'role lock' in 2020; whereby, each team was limited to picking 2 heroes from each group. The game experienced a sudden decline in popularity going into 2020, believed to be primarily due to this change, thus it is important to review if this was indeed a necessary change, or a bad decision by the developers.
 
 #### Project Aim
 
-The primary aim of this project is to visualize the distribution of hero popularity, and formation of a meta during the **OWL** 2019 tournament, in order to see how big of an issue the GOATS composition was to hero pick variety.
+The primary aim of this project is to visualize the distribution of hero popularity, and formation of a meta (or most popular strategy) during the **OWL** 2019 tournament, in order to see the effect on hero pick variety.
 
 *note: the acronyms OWL and GOATS are unrelated to the animals*
 
 ### Data Description:
 
-A codebook for this project is located at /codebook.txt, and a description of csv data column titles is located in /data/rawdata/datasource.txt 
+A codebook describing variables and functions within this project is located at /codebook.txt, and a description of csv data column titles is located in /data/rawdata/datasource.txt 
 
 ## Data Preparation
 
 ### Loading Packages
 
-The renv package was used to store versions of packages used at the time of coding, allowing the visualisation to function independent of future updates to packages.
+The renv package was used to store package versions used for the project, preventing future package updates from breaking the project.
 
-Package versions used in this project are listed within the file renv.lock
+Package versions used in this project are listed within the file /renv.lock
 
 ```{r loadlib, echo = TRUE, results = 'hide', warning = FALSE, message = FALSE}
-knitr::opts_chunk$set(echo = TRUE, results = 'hide', warning = FALSE, error = FALSE, message = FALSE, rows.print = 5, fig.align = "center")
+#Load packages with renv
+install.packages("renv")
+library(renv)
 renv::restore()
 
 #Import packages
@@ -64,7 +68,9 @@ library(readr)
 library(showtext)
 ```
 
-The dataset consists of three separate csv files, so the initial step was to combine these into a single dataframe.
+### Combining data
+
+The dataset consists of three separate csv files, so the initial step was to combine these into a single dataframe to facilitate simpler and easier data retrieval.
 
 ```{r results = TRUE}
 #Read raw data files and combine into a single csv file
@@ -80,7 +86,11 @@ write.csv(combinedData, combinedData_FileName)   #Write dataset to new .csv in /
 combinedData
 ```
 
-The combined dataset contains a large amount of unnecessary information; thus, was cleaned by extracting required data to a new data frame to increase readability and decrease data frame processing time.
+### Removing unwanted data
+
+The combined dataset contains a large amount of unnecessary information; thus, it was cleaned by extracting required data to a new data frame. This increases readability and decreases data frame processing time.
+
+Furthermore, the play_time data was converted from seconds to hours to increase readability of the final visualisation. This code was saved as a function, allowing it to be used on differently grouped data later in the project.
 
 ```{r}
 #Obtain data to plot hero playtime
@@ -94,7 +104,7 @@ playTimeData <- heroData[heroData$stat_name == "Time Played", ] %>%   #Remove ro
 #Creates the function clean_pt; which, reorders and converts play time data into hours
 clean_pt <- function(df){  
     df %>%      
-    arrange(., desc(play_time)) %>%                                   #Arrange data by descending value of play_time
+    arrange(., desc(play_time)) %>%                                   #Arrange rows by descending value of play_time
     mutate(play_time = play_time/3600) %>%                            #Convert play_time from seconds to hours and round to the nearest whole number
     mutate(rounded_play_time = round(play_time)) %>% 
     transform(rounded_play_time = as.character(rounded_play_time))
@@ -105,20 +115,11 @@ playTimeData <- clean_pt(playTimeData)
 
 ## Visualisation
 
-A bar chart was most appropriate for the data, and is simple and commonly used, increasing ease of interpreting the data
-
-Clarity and appeal were achieved using a minimalistic and clean design
-
 ### Colours
 
-Colours of bars correspond to colours of the heroes within the game, increasing the glance value for those familiar with the game (And, those most likely to be interested in the data)
+Colours of bars in the visualisation correspond to colours of the heroes within the game, increasing glance value for those familiar with the game. This is important as those most likely to be interested in the data are those familiar with the game.
 
-### Custom Text
-
-A custom text was imported and applied to the visualisation using the showtext package. The font is similar to fonts used within the game, making the visualisation appear more professional and/or official.
-
-This introduced an issue with preserving custom fonts when saving an image of the plot, which was fixed by plotting to a windows graphics device using windows() before saving this output as a .png. 
-However, I am unable to test whether this fix would work on other operating systems, as I currently only have access to windows OS. For these OS, the quartz() command is a possible fix to replace windows().
+Some colours with low contrast to the white plot background were increased in saturation to facilitate easier plot reading.
 
 ```{r}
 #Aesthetics for graph
@@ -141,11 +142,19 @@ i = 0
 playTimeData <- add_colour(playTimeData)
 ```
 
+### Custom Text
+
+A custom text was imported and applied to the visualisation using the showtext package. The font is similar to fonts used within the game, making the visualisation appear more professional and/or official, while increasing overall appeal.
+
 ```{r}
 #Load new custom font for showtext package
 font_add_google(name = "Bebas Neue", family = "Bebas Neue")
 showtext_auto()
 ```
+
+### Graph Design Variables
+
+Similar graph and theme options, which were used multiple times within the code, were saved as variables to facilitate easier adjustment.
 
 ```{r}
 #Define graph aesthetic variables
@@ -156,6 +165,10 @@ barLabelSize = 11
 ```
 
 ### Bar Plot
+
+A bar chart was most appropriate for the data to compare a grouped continuous variable. Furthermore, it is simple and commonly used, increasing ease of data interpretation.
+
+Only 15 out of the 30 heroes were included in the plot in order to increase visual clarity; while the idea that the visualization portrays was maintained by ordering heroes by play time. This allows the distribution of the hero 'popularity ranking' to be visualized to see if a meta had formed (suggested by a non-smooth distribution, dominated by a few popular heroes).
 
 ```{r results = TRUE}
 #Define data to plot
@@ -174,6 +187,16 @@ for (i in nheros){   #If playtime has more than 2 digits, increases spacing of H
 
 playTimeData
 ```
+
+### Design
+
+A minimalist and clean design was used to reduce clutter, emphasizing clarity while maintaining a modern appeal.
+
+Text contrast with the background is used to guide the viewer to important information, such as the title and hero names. Less contrasting colour values are used for less important information. If the viewer is specifically looking for this information they will be able to find it, but lowered contrast prevents it becoming overbearing to the clarity of the overall design.
+
+Bar labels allow for accurate data readings while reducing the number of axis ticks required, allowing for a simpler plot. Number values are larger in size than the text unit label, guiding viewer attention to the more important information in a similar way to contrast (as described above). Number values were rounded to the nearest whole number, and previously converted from seconds to hours to increase readability.
+
+Low opacity bar limit shadow plots preserve plot structure when removing axis lines, allowing for a more appealing design while maintaining the ability to accurately visually compare data.
 
 ```{r}  
 #Plot graph and customize various plot aesthetics
@@ -216,7 +239,8 @@ print(graph)
 
 ### Saving Plot
 
-
+I encountered an issue with preserving custom fonts when saving the plot, which was fixed by plotting to a windows graphics device using windows() before saving this output as a .png. 
+However, I am unable to test whether this fix would work on other operating systems, as I currently only have access to windows. Nevertheless, my research suggests the quartz() command is a possible fix to replace windows() for mac users.
 
 ```{r eval = FALSE}
 #Save plot to figs folder
@@ -235,15 +259,17 @@ dev.print(file = here("figs", "PlayTimeGraph.png"), device = png, width = 1200, 
 
 ### Interpretation
 
-The plot shows a notable difference between the play time of the top 6 heroes compared to the rest of the 30-hero roster
+The plot shows a notable difference between the play time of the top 6 heroes compared to the rest of the 30-hero roster. In combination with the knowledge that the GOATS strategy contains these same top 6 most popular heroes: Lucio, Brigitte, Zarya, D.Va, Zenyatta, and Reinhardt, this suggests that the popularity of this single strategy dominated the competitive Overwatch scene during 2019.
 
 ### Possible follow-ups or extensions
 
-An animated plot could accommodate looking at changes in hero popularity distribution over the duration of 2019 OWL, and the effect of title matches (finals) on hero popularity distribution.
+The interpretation of the plot, suggesting the popularity of this single strategy, could be tested by plotting the play times of heroes with each other hero on the same team. The expectation is that the top 6 heroes were played significantly more together than when paired with any of the rest of the hero roster. Equally, the popularity of the strategy in a competitive environment suggests its strength. Thus, win rate of heroes should correspond to play time, and popularity. However, the information required to plot both of these could not be extracted from the dataset available.
 
-## Animated Plot
+Furthermore, an animated plot could accommodate visualizing changes in hero popularity distribution over the duration of 2019 OWL, and the effect of title matches (finals) on hero popularity distribution. This may show shifts in popularity of the strategy over time, and depending on the stage of the tournament.
 
-Because the data does not smoothly correlate between states, I decided not to reorder the plot for each state to reduce confusion in the visualization. This has the downside of making it harder to view the specific popularity ranking of each hero. Similarly, a line graph may  However, the main purpose of this visualization is to view the formation of a meta, and size of disparity between hero popularities.
+## Animated Visualization
+
+Play time data was grouped by both stage and hero, and previously saved functions were used to prepare the data to be plotted.
 
 ```{r results = TRUE}
 library(gganimate)
@@ -278,12 +304,16 @@ shpt <- ggplot(stagePlayTimeData, aes(x = hero, y = percent_play_time, fill = he
 stagePlayTimeData
 ```
 
+### Animated Bar Plot
+
+Because the data does not smoothly correlate between states, I decided not to reorder the plot for each state to reduce confusion in the visualization. This has the downside of making it harder to view the specific popularity ranking of each hero. Similarly, a line graph may be more appropriate to show changes in popularity over time. However, the main purpose of this visualization is to view the formation of a meta, and thus visualize the gap in popularity between meta and non-meta heroes, which a bar chart better achieves. For similar reasons, all heroes were included in the graph, as the top 15 heroes did not remain constant - as in the previous plot.
+
 ```{r results = TRUE, dpi = 300}
 #Plot graph and customize various plot aesthetics
 staticAnimGraph <- shpt +
   geom_bar(stat = "identity", show.legend = FALSE) +
   scale_y_continuous(limits = c(0, 100), expand = c(0, 0)) +
-  scale_x_discrete(limits = rev) +
+  scale_x_discrete(limits = rev, expand = c(0, 0)) +
   xlab("HERO") +
   ylab("PLAY TIME (hours)") +
   labs(title = "Overwatch League Character Usage", subtitle = ("playtime during {closest_state}"), size = 40) +
@@ -295,6 +325,7 @@ staticAnimGraph <- shpt +
   theme(panel.border = element_blank(), 
         panel.grid.major = element_blank(), 
         panel.grid.minor = element_blank(),
+        plot.margin = unit(c(1, 1, 1, 1), "cm"),
         axis.line = element_line(colour = backgroundColour),
         plot.background = element_rect(fill = backgroundColour),
         panel.background = element_rect(fill = "#e6e6e6"),
@@ -307,12 +338,12 @@ staticAnimGraph <- shpt +
         axis.ticks.y = element_blank(),
         axis.ticks.length.x = unit(0.2, "cm"),
         axis.ticks.length.y = unit(0.3, "cm"),
-        axis.text.x = element_text(colour = textColourFaded, size = 16, vjust = 0.9, hjust = 0.85),
+        axis.text.x = element_text(colour = textColourFaded, size = 16, angle = 55, vjust = 0.9, hjust = 0.95),
         axis.text.y = element_text(colour = textColour, size = 20)) +
-        transition_states(stage, transition_length = 2, state_length = 2)
+        transition_states(stage, transition_length = 2, state_length = 3)
 
 #Render the animated graph as gif and save to figs folder
-animate(staticAnimGraph, 200, fps = 20, width = 900, height = 900,
+animate(staticAnimGraph, 200, fps = 20, width = 900, height = 1200,
         renderer = gifski_renderer(here("figs", "SeasonPlayTimeGraph.gif")))
 ```
 
@@ -320,20 +351,13 @@ animate(staticAnimGraph, 200, fps = 20, width = 900, height = 900,
 
 ### Interpretation
 
+The strategy appears to remain dominant throughout most of 2019. However towards the end, during OWL stage 3 and its title matches, the gap between the popularity of the top 6 heroes is dramatically reduced, suggesting the introduction of a 'role lock' may not have been necessary to increase the variation in hero picks within the game. Thus, this decision by the developers may have been an unnecessary detriment to the game's popularity in the years after 2019.
+
 Additionally the difference between play times of the top 6 heroes and the other 24 seems larger in title matches for stages 1 and 2, indicating either less experimentation by teams, or that teams using the meta GOATS composition were the ones that reached the finals, suggesting it's strength over the other compositions.
 
 ### Possible Follow-ups or Extensions
 
 Hero pick distribution could be plotted against viewer amounts for the respective stages, investigating a possible link between game popularity and hero pick variety.
 
-## Code Readability
-
-Functions
-
-Order
-
-Indents, comments, structure, rationale explained
-
-Variables (appropriate and clear names)
-
 ## References
+

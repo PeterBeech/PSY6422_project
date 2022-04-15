@@ -170,7 +170,7 @@ shpt <- ggplot(stagePlayTimeData, aes(x = hero, y = percent_play_time, fill = he
 staticAnimGraph <- shpt +
   geom_bar(stat = "identity", show.legend = FALSE) +
   scale_y_continuous(limits = c(0, 100), expand = c(0, 0)) +
-  scale_x_discrete(limits = rev) +
+  scale_x_discrete(limits = rev, expand = c(0, 0)) +
   xlab("HERO") +
   ylab("PLAY TIME (hours)") +
   labs(title = "Overwatch League Character Usage", subtitle = ("playtime during {closest_state}"), size = 40) +
@@ -182,6 +182,7 @@ staticAnimGraph <- shpt +
   theme(panel.border = element_blank(), 
         panel.grid.major = element_blank(), 
         panel.grid.minor = element_blank(),
+        plot.margin = unit(c(1, 1, 1, 1), "cm"),
         axis.line = element_line(colour = backgroundColour),
         plot.background = element_rect(fill = backgroundColour),
         panel.background = element_rect(fill = "#e6e6e6"),
@@ -194,10 +195,10 @@ staticAnimGraph <- shpt +
         axis.ticks.y = element_blank(),
         axis.ticks.length.x = unit(0.2, "cm"),
         axis.ticks.length.y = unit(0.3, "cm"),
-        axis.text.x = element_text(colour = textColourFaded, size = 16, vjust = 0.9, hjust = 0.85),
+        axis.text.x = element_text(colour = textColourFaded, size = 16, angle = 55, vjust = 0.9, hjust = 0.95),
         axis.text.y = element_text(colour = textColour, size = 20)) +
-        transition_states(stage, transition_length = 2, state_length = 2)
+        transition_states(stage, transition_length = 2, state_length = 3)
 
 #Render the animated graph as gif and save to figs folder
-animate(staticAnimGraph, 200, fps = 20, width = 900, height = 900,
+animate(staticAnimGraph, 200, fps = 20, width = 900, height = 1100,
         renderer = gifski_renderer(here("figs", "SeasonPlayTimeGraph.gif")))
