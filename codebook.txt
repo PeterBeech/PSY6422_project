@@ -1,0 +1,111 @@
+Variable and Function Descriptions:
+
+
+Dataframes:
+
+ combinedData -
+	Type: tbl_df
+	Desc: Combined df of all 3 2019 stage rawdata csv files
+
+ heroColourData -
+	Type: data.frame
+	Desc: Hero colour data retrieved from hero_colours.csv
+
+ playTimeData -
+	Type: data.frame
+	Desc: Simplified from combinedData, containing data required to plot total play time per hero.
+	      Contains play time grouped by hero, and related hero colour values
+
+ stagePlayTimeData -
+	Type: data.frame
+	Desc: Simplified from combinedData, containing data required to plot play time per hero by season.
+	      Contains play time grouped by both hero and season, and related hero colour values
+
+ stageTime -
+	Type: data.frame
+	Desc: Contains play time grouped by season
+
+
+Values:
+
+ backgroundColour -
+	Value: "white"
+	Type: character
+	Desc: Defines background colour for plot
+
+ barLabelSize -
+	Value: 11
+	Type: numeric
+	Desc: Defines size of in-plot bar labels
+
+ textColour
+	Value: "#5c5c5c"
+	Type: character
+	Desc: colour hex value for plot text colour
+
+ textColourFaded
+	Value: "#5c5c5c8a"
+	Type: character
+	Desc: higher transparency colour hex value for plot text colour, attracting less attention
+
+ combinedData_FileName -
+	Value: "/PSY6422_project/data/phs_2019_combined_data.csv"
+	Type: character
+	Desc: Filepath location of saved csv containing data from combinedData
+
+ heroColourLocation -
+	Value: "/PSY6422_project/data/hero_colours.csv"
+	Type: character
+	Desc: Filepath location of hero colour hex values
+
+ nheroes -
+	Type: integer
+	Desc: Integers from 1 to the number of heroes to be plotted on the graph
+
+ hourLabel -
+	Value: "HOURS" or "  HOURS"
+	Type: character [1:nheroes]
+	Desc: Defined spacing for HOURS label for in-plot bar label
+
+ i -
+	Type: integer
+	Desc: Iteration number used within loops
+
+ j -
+	Type: integer
+	Desc: Iteration number used within loops
+
+ s -	
+	Type: character
+	Desc: Name of the current stage being plotted in animated graph, used within the plot subtitle
+
+ srow -
+	Type: integer
+	Desc: Result of querying which rows in a dataframe contain a specific value for stage
+
+ 
+ggplot data:
+ 
+ hpt -
+	Desc: Hero play time data to be plotted to the play time by hero graph
+
+ graph -
+	Desc: Bar plot of hpt, with specified aesthetic variables
+
+ shpt -
+	Desc: Season hero play time data to be plotted to the playtime by hero by season animated graph
+
+ staticAnimGraph -
+	Desc: Animated bar plot of shpt, with specified aesthetic variables
+
+
+Functions:
+
+ add_colour -
+	Arguments: (df)
+	Desc: adds hero hex colour data as column hero_colour to specified dataframe, from hero_colours.csv
+
+ clean_pt -
+	Arguments: (df)
+	Desc: converts play time from seconds into hours and rounds to the nearest whole number,
+	      saving the output as a new column called rounded_play_time to the specified dataframe
