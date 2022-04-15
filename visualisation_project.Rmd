@@ -6,6 +6,8 @@ output:
     df_print: paged
 ---
 ```{r echo = FALSE, results = FALSE}
+install.packages("renv")
+library(renv)
 renv::restore()
 ```
 ```{r echo = FALSE, warning = FALSE, message = FALSE, error = FALSE, out.width = "65%", fig.align = "center"}
