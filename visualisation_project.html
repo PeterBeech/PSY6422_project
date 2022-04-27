@@ -180,21 +180,23 @@ pre code {
 <p>Overwatch is a 6-a-side online team-based first-person shooter (fps) game in which two teams battle to achieve victory over each other by collectively competing to complete a set objective. Players on each team pick a unique character or <strong>‘hero’</strong> (limited to one each per team), from a roster of 30 (as of 2019).</p>
 <p>Characters are categorized into 3 groups depending upon their designed role in a team:<br />
 <strong>Tanks</strong> survive longer and protect teammates from damage,<br />
-<strong>Healers</strong> restore the health of teammates, and<br />
+<strong>Supports</strong> restore the health of teammates, and<br />
 <strong>Damage</strong> are designed to be more mobile and deal higher damage to enemy heroes.</p>
 </div>
 <div id="data-origins-and-research-questions" class="section level2">
 <h2>Data Origins and Research Questions</h2>
-<p>The dataset was obtained from <a href="https://www.overwatchleague.com/en-us/statstab">Overwatch League Statslab</a> and contains in-game stat data collected during the <strong>Overwatch league (OWL)</strong> 2019 professional esports tournament; including a record of how long each hero was played for by each player in each tournament match, which indicates the popularity of the character in the <strong>‘meta’</strong> - the generally agreed upon best strategy.</p>
-<p>The game’s esports scene reached peak popularity around 2018-19, during which time a specific composition of heroes, termed <strong>GOATS</strong> (after the North American team which discovered it), was found to be most optimal and became the popular choice for professional teams. This composition composed of 3 tanks, and 3 healers, neglecting mobile dps characters in favor of raw survivability. This was controversial as most of these heroes required less skill at aiming - a central part of most fps games.</p>
-<p>The dominance of this composition triggered a wave of attempts by the developers of the game to decrease the power of the heroes within GOATS during 2019, culminating with the introduction of a ‘role lock’ in 2020; whereby, each team was limited to picking 2 heroes from each group. The game experienced a sudden decline in popularity going into 2020, believed to be primarily due to this change, thus it is important to review if this was indeed a necessary change, or a bad decision by the developers.</p>
+<p>The dataset was obtained from <a href="https://www.overwatchleague.com/en-us/statstab">Overwatch League Statslab</a> and contains in-game statistics collected during the <strong>Overwatch league (OWL)</strong> 2019 professional esports tournament; including a record of how long each hero was played for by each player in each tournament match, which indicates the popularity of the character in the <strong>‘meta’</strong> - the generally agreed upon best strategy.</p>
+<p>The game’s esports scene reached peak popularity around 2018-19, during which time a specific strategy, termed <strong>GOATS</strong> (after the North American team which discovered it), was discovered and became the popular choice for professional teams. This strategy composed of picking 3 specific tank, and 3 specific support heroes, neglecting mobile dps characters in favor of increased ability to survive. This was controversial as the characters used in this strategy lacked heavy aim requirements - a primary focal point of other fps games. Furthermore, as only a few specific characters were used in this strategy, other characters were less likely to be picked, reducing variety within the game.</p>
+<p><em>note: the acronyms OWL and GOATS are unrelated to the animals</em></p>
+<p>The popularity of GOATS triggered a wave of attempts by the developers of the game to decrease the power of the strategy during 2019, culminating with the introduction of a ‘role lock’ in early 2020; whereby, each team is required to pick 2 heroes from each role. This was likely done to increase the variety of characters picked.</p>
+<p>The game experienced a sudden decline in popularity going into 2020, believed to be partially due to the implementation of a role lock. Thus, it is important to review if this was indeed a necessary change to de-throne a single dominating strategy, or an unneeded action with severe negative long-term impact on the game’s popularity.</p>
 <div id="project-aim" class="section level4">
 <h4>Project Aim</h4>
-<p>The primary aim of this project is to visualize the distribution of hero popularity, and formation of a meta (or most popular strategy) during the <strong>OWL</strong> 2019 tournament, in order to see the effect on hero pick variety.</p>
-<p><em>note: the acronyms OWL and GOATS are unrelated to the animals</em></p>
+<p>The primary aim of this project is to visualize the distribution of hero popularity, and the severity of dominance of a single strategy during the <strong>OWL</strong> 2019 tournament. This will allow us to observe the effect on overall hero pick variety, and thus evaluate the game’s developer’s decision to implement a role lock (limitations on the number of each character type that can be played).</p>
 </div>
-<div id="data-description" class="section level3">
-<h3>Data Description:</h3>
+<div id="project-organization" class="section level3">
+<h3>Project Organization:</h3>
+<p>The /data folder contains data required for the project, and /figs contains images required for the project, as well as visualization outputs.</p>
 <p>A codebook describing variables and functions within this project is located at /codebook.txt, and a description of csv data column titles is located in /data/rawdata/datasource.txt</p>
 </div>
 </div>
@@ -202,7 +204,7 @@ pre code {
 <h2>Data Preparation</h2>
 <div id="loading-packages" class="section level3">
 <h3>Loading Packages</h3>
-<p>The renv package was used to store package versions used for the project, preventing future package updates from breaking the project.</p>
+<p>The renv package was used to store package versions used within the project, future-proofing the project against future package updates.</p>
 <p>Package versions used in this project are listed within the file /renv.lock</p>
 <pre class="r"><code>#Load packages with renv
 install.packages(&quot;renv&quot;)
@@ -239,7 +241,7 @@ combinedData</code></pre>
 <div id="removing-unwanted-data" class="section level3">
 <h3>Removing unwanted data</h3>
 <p>The combined dataset contains a large amount of unnecessary information; thus, it was cleaned by extracting required data to a new data frame. This increases readability and decreases data frame processing time.</p>
-<p>Furthermore, the play_time data was converted from seconds to hours to increase readability of the final visualisation. This code was saved as a function, allowing it to be used on differently grouped data later in the project.</p>
+<p>Furthermore, the play_time data was converted from seconds to hours to increase readability of the final visualization. This code was saved as a function, allowing it to be used on differently grouped data later in the project.</p>
 <pre class="r"><code>#Obtain data to plot hero playtime
 heroData &lt;- combinedData[combinedData$hero != &quot;All Heroes&quot;, ]   #Remove rows with &quot;All Heroes&quot; in hero column
   
@@ -260,11 +262,11 @@ clean_pt &lt;- function(df){
 playTimeData &lt;- clean_pt(playTimeData) </code></pre>
 </div>
 </div>
-<div id="visualisation" class="section level2">
-<h2>Visualisation</h2>
+<div id="visualization" class="section level2">
+<h2>Visualization</h2>
 <div id="colours" class="section level3">
 <h3>Colours</h3>
-<p>Colours of bars in the visualisation correspond to colours of the heroes within the game, increasing glance value for those familiar with the game. This is important as those most likely to be interested in the data are those familiar with the game.</p>
+<p>Colours of bars in the visualization correspond to colours of the heroes within the game, increasing glance value for those familiar with the game. This is important as those most likely to be interested in the data are those familiar with the game.</p>
 <p>Some colours with low contrast to the white plot background were increased in saturation to facilitate easier plot reading.</p>
 <pre class="r"><code>#Aesthetics for graph
   #Retrieve colour associated with each hero and add to playTimeData df as column hero_colour
@@ -287,7 +289,7 @@ playTimeData &lt;- add_colour(playTimeData)</code></pre>
 </div>
 <div id="custom-text" class="section level3">
 <h3>Custom Text</h3>
-<p>A custom text was imported and applied to the visualisation using the showtext package. The font is similar to fonts used within the game, making the visualisation appear more professional and/or official, while increasing overall appeal.</p>
+<p>A custom text was imported and applied to the visualization using the showtext package. The font is similar to fonts used within the game, making the visualization appear more professional and/or official, while increasing overall appeal.</p>
 <pre class="r"><code>#Load new custom font for showtext package
 font_add_google(name = &quot;Bebas Neue&quot;, family = &quot;Bebas Neue&quot;)
 showtext_auto()</code></pre>
@@ -386,12 +388,13 @@ dev.print(file = here(&quot;figs&quot;, &quot;PlayTimeGraph.png&quot;), device =
 <h2>Conclusion Part 1</h2>
 <div id="interpretation" class="section level3">
 <h3>Interpretation</h3>
-<p>The plot shows a notable difference between the play time of the top 6 heroes compared to the rest of the 30-hero roster. In combination with the knowledge that the GOATS strategy contains these same top 6 most popular heroes: Lucio, Brigitte, Zarya, D.Va, Zenyatta, and Reinhardt, this suggests that the popularity of this single strategy dominated the competitive Overwatch scene during 2019.</p>
+<p>The plot shows a severe difference between the play times of the top 6 heroes compared to the rest of the 30-hero roster. In combination with the knowledge that the GOATS strategy contains these same top 6 most popular heroes: Lucio, Brigitte, Zarya, D.Va, Zenyatta, and Reinhardt, this suggests that this single strategy completely dominated the competitive Overwatch scene during 2019. This heavily supports that the decision to implement a role lock was essential to preserve hero pick variety within the game. Nevertheless, although this plot suggests at imbalance in hero variety caused by significant use of the GOATS strategy, through correlation of popular heroes, it does not explicitly show how muchh each strategy was used, but rather each hero.</p>
 </div>
 <div id="possible-follow-ups-or-extensions" class="section level3">
 <h3>Possible follow-ups or extensions</h3>
-<p>The interpretation of the plot, suggesting the popularity of this single strategy, could be tested by plotting the play times of heroes with each other hero on the same team. The expectation is that the top 6 heroes were played significantly more together than when paired with any of the rest of the hero roster. Equally, the popularity of the strategy in a competitive environment suggests its strength. Thus, win rate of heroes should correspond to play time, and popularity. However, the information required to plot both of these could not be extracted from the dataset available.</p>
-<p>Furthermore, an animated plot could accommodate visualizing changes in hero popularity distribution over the duration of 2019 OWL, and the effect of title matches (finals) on hero popularity distribution. This may show shifts in popularity of the strategy over time, and depending on the stage of the tournament.</p>
+<p>This interpretation of the plot, suggesting the severely differing play times of heroes was due to the popularity of single strategy, could be tested by plotting play times of heroes with each other hero as a teammate. The expectation is that the top 6 heroes were played significantly more together than when paired with any of the rest of the hero roster. However, the information required to plot this could not be extracted from the dataset available.</p>
+<p>Equally, the popularity of the strategies in a competitive environment suggests their ability to win games. Thus, the win rates of heroes should correspond to their play time, and popularity. Nevertheless, this information was also not available from the dataset.</p>
+<p>Furthermore, this plot does not show if any change in dominance of the strategy occured during the tournament. Thus, an animated plot could accommodate visualization of changes in the hero popularity distribution over the duration of 2019 OWL, and the effect of tournament stage type. This extension has been carried out below.</p>
 </div>
 </div>
 <div id="animated-visualization" class="section level2">
@@ -434,7 +437,7 @@ stagePlayTimeData</code></pre>
 </div>
 <div id="animated-bar-plot" class="section level3">
 <h3>Animated Bar Plot</h3>
-<p>Because the data does not smoothly correlate between states, I decided not to reorder the plot for each state to reduce confusion in the visualization. This has the downside of making it harder to view the specific popularity ranking of each hero. Similarly, a line graph may be more appropriate to show changes in popularity over time. However, the main purpose of this visualization is to view the formation of a meta, and thus visualize the gap in popularity between meta and non-meta heroes, which a bar chart better achieves. For similar reasons, all heroes were included in the graph, as the top 15 heroes did not remain constant - as in the previous plot.</p>
+<p>Because the data does not smoothly correlate between states, I decided not to reorder the plot for each state to reduce confusion in the visualization. This has the downside of making it harder to view the specific popularity ranking of each hero. Similarly, a line graph may be more appropriate to show changes in popularity over time. However, the main purpose of this visualization is to evaluate the dominance in popularity of a single strategy, and thus visualize the formation of a gap in popularity between heroes, which a bar chart better achieves. For similar reasons, all heroes were included in the graph, as the top popularity rankings did not remain constant unlike the previous visualization.</p>
 <pre class="r"><code>#Plot graph and customize various plot aesthetics
 staticAnimGraph &lt;- shpt +
   geom_bar(stat = &quot;identity&quot;, show.legend = FALSE) +
@@ -478,16 +481,20 @@ animate(staticAnimGraph, 200, fps = 20, width = 900, height = 1200,
 <h2>Conclusion Part 2</h2>
 <div id="interpretation-1" class="section level3">
 <h3>Interpretation</h3>
-<p>The strategy appears to remain dominant throughout most of 2019. However towards the end, during OWL stage 3 and its title matches, the gap between the popularity of the top 6 heroes is dramatically reduced, suggesting the introduction of a ‘role lock’ may not have been necessary to increase the variation in hero picks within the game. Thus, this decision by the developers may have been an unnecessary detriment to the game’s popularity in the years after 2019.</p>
-<p>Additionally the difference between play times of the top 6 heroes and the other 24 seems larger in title matches for stages 1 and 2, indicating either less experimentation by teams, or that teams using the meta GOATS composition were the ones that reached the finals, suggesting it’s strength over the other compositions.</p>
+<p>The GOATS strategy appears to remain dominant throughout most of 2019. However, towards the end of the year, during OWL stage 3 and its title matches, the popularity of heroes appears to shift away from the previously dominant 6. This suggests that another strategy may have naturally emerged to counter GOATS, and thus the introduction of a ‘role lock’ may not have been necessary to increase the variation in hero picks within the game. Hence, this decision by the developers may have been an unnecessary detriment to the game’s popularity in the years after 2019.</p>
+<p>Additionally, the difference between play times of the top 6 heroes and the other 24 seems larger in title matches for stages 1 and 2 than regular matches. This indicates either less experimentation by teams during these more important matches, or that the teams using GOATS were the ones that were winning, thus reaching the finals and suggesting the strength of GOATS over the other strategies.</p>
+<p>The non-animated plot better represents the dominance of one popular strategy throughout the tournament, while the animated plot represents changes throughout. However, the visualisation takes longer to interpret as due to it being animated, not all data is immediately available to the reader. Therefore, the animated plot shows more information, but the simplicity of the non-animted plot allows it to quickly demonstrate the existence of imbalanced hero pick rates due to formation of a popular strategy.</p>
 </div>
 <div id="possible-follow-ups-or-extensions-1" class="section level3">
 <h3>Possible Follow-ups or Extensions</h3>
-<p>Hero pick distribution could be plotted against viewer amounts for the respective stages, investigating a possible link between game popularity and hero pick variety.</p>
+<p>In order to assess whether the teams reaching title matches were those using the GOATS strategy, hero play times could be plotted and grouped by team. Furthermore, hero pick distribution could be plotted against viewer amounts for the respective stages, investigating a possible link between game popularity and hero pick variety.</p>
 </div>
 </div>
 <div id="references" class="section level2">
 <h2>References</h2>
+<p>Repo: <a href="https://github.com/PeterBeech/PSY6422_project" class="uri">https://github.com/PeterBeech/PSY6422_project</a></p>
+<p>Overwatch stats lab: <a href="https://www.overwatchleague.com/en-us/statstab" class="uri">https://www.overwatchleague.com/en-us/statstab</a></p>
+<p>Article about the GOATS strategy: <a href="https://doesports.com/overwatch/news/overwatch-goats-explained" class="uri">https://doesports.com/overwatch/news/overwatch-goats-explained</a></p>
 </div>
 
 

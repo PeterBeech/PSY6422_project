@@ -1,5 +1,5 @@
 #Load packages with renv
-install.packages("renv")
+#install.packages("renv")
 library(renv)
 renv::restore()
 
